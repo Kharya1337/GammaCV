@@ -677,8 +677,10 @@ export default class ExamplePage
   }
 }
 
-ExamplePage.contextTypes = {
+const contextTypes = {
   intl: PropTypes.shape({
     getText: PropTypes.func,
   }),
 };
+
+Object.assign(ExamplePage, { contextTypes });

@@ -319,7 +319,7 @@ export default class ExamplePage
     } catch (error) {
       this.stop();
       this.setState({
-        error: 'PermissionDenied',
+        error: 'NotSupported',
       });
     }
   };
@@ -552,7 +552,7 @@ export default class ExamplePage
     }
 
     if (error) {
-      const icon = <img src="/static/images/Error_icon.svg" alt="Error icon" />;
+      const icon = <img src="/static/images/error_icon.svg" alt="Error icon" />;
 
       return (
         <div className={s.root_example}>

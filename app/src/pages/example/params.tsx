@@ -210,5 +210,5 @@ const contextTypes = {
     getText: PropTypes.func,
   }),
 };
-//
+
 Object.assign(ParamsWrapper, { contextTypes });

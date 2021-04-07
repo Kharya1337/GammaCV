@@ -42,8 +42,10 @@ export async function getStaticPaths() {
 
 export async function getStaticProps(context) {
   const data = (await import(`../../sources/docs/_data/${context.params.id}.md`)).default;
-  const json = (await import(`../../sources/docs/_data/${context.params.id}.json`)).default;
-
+  let json = [{ description: '' }];
+  if (context.params.id !== 'get_started' || context.params.id !== 'create_operation' || context.params.id !== 'contributing') {
+    json = (await import(`../../sources/docs/_data/${context.params.id}.json`)).default;
+  }
   return {
     props: {
       id: context.params.id,

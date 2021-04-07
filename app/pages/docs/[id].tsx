@@ -4,19 +4,17 @@ import PropTypes from 'prop-types';
 import { DocsPage } from '../../src/pages';
 
 const Doc = (props, context) => {
-  const { id, data, desc } = props;
+  const { id, data } = props;
   const { intl } = context;
+  const title = `${intl.getText('operations', undefined, id)} - GammaCV`;
 
-  const name = intl.getText('operations', undefined, id);
   return (
     <>
       <Head>
         <title>
-          {name}
-          {' '}
-          - GammaCV
+          {title}
         </title>
-        <meta name="description" content={name + ' ' + desc} />
+        <meta property="twitter:title" content={title} />
       </Head>
       <DocsPage
         data={data}
@@ -42,15 +40,11 @@ export async function getStaticPaths() {
 
 export async function getStaticProps(context) {
   const data = (await import(`../../sources/docs/_data/${context.params.id}.md`)).default;
-  let json = [{ description: '' }];
-  if (context.params.id !== 'get_started' || context.params.id !== 'create_operation' || context.params.id !== 'contributing') {
-    json = (await import(`../../sources/docs/_data/${context.params.id}.json`)).default;
-  }
+
   return {
     props: {
       id: context.params.id,
       data,
-      desc: json[0].description,
     },
   };
 }

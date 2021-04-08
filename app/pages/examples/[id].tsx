@@ -6,7 +6,6 @@ import { CircularProgress } from 'lib-react-components';
 const Example = (props, context) => {
   const { id } = props;
   const { intl } = context;
-  const title = `${intl.getText('operations', undefined, id)} - GammaCV`;
   const [loading, setLoading] = useState(true);
   const [examplePage, setExamplePage] = useState<typeof import('../../src/pages/example')>({} as any);
   const [exampleData, setExampleData] = useState<{ default: any }>({} as any);
@@ -48,13 +47,15 @@ const Example = (props, context) => {
     );
   };
 
+  const TITLE = `${intl.getText('operations', undefined, id)} - GammaCV`;
   return (
     <>
       <Head>
         <title>
-          {title}
+          {TITLE}
         </title>
-        <meta property="twitter:title" content={title} />
+        <meta property="twitter:title" content={TITLE} />
+        <meta property="og:title" content={TITLE} />
       </Head>
       {renderContent()}
     </>

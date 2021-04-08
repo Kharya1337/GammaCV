@@ -40,8 +40,8 @@ export default function MyApp({ Component, pageProps }) {
     };
   });
 
-  const TITLE = "GammaCV";
-  const DESCRIPTION = "GammaCV is a WebGL accelerated Computer Vision library for modern web applications.";
+  const TITLE = 'GammaCV';
+  const DESCRIPTION = 'GammaCV is a WebGL accelerated Computer Vision library for modern web applications.';
   return (
     <>
       <Head>

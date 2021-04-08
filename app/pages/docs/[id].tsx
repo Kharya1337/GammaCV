@@ -6,15 +6,16 @@ import { DocsPage } from '../../src/pages';
 const Doc = (props, context) => {
   const { id, data } = props;
   const { intl } = context;
-  const title = `${intl.getText('operations', undefined, id)} - GammaCV`;
+  const TITLE = `${intl.getText('operations', undefined, id)} - GammaCV`;
 
   return (
     <>
       <Head>
         <title>
-          {title}
+          {TITLE}
         </title>
-        <meta property="twitter:title" content={title} />
+        <meta property="twitter:title" content={TITLE} />
+        <meta property="og:title" content={TITLE} />
       </Head>
       <DocsPage
         data={data}

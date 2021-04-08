@@ -54,11 +54,7 @@ const Example = (props, context) => {
         <title>
           {TITLE}
         </title>
-<<<<<<< HEAD
-        <meta property="twitter:title" content={TITLE} />
-=======
         <meta name="twitter:title" content={TITLE} />
->>>>>>> 33f410eaca1221b341dc855b37d4e50bd0dde5ad
         <meta property="og:title" content={TITLE} />
       </Head>
       {renderContent()}

@@ -45,7 +45,9 @@ export default function MyApp({ Component, pageProps }) {
       <Head>
         <meta name="viewport" content="width=device-width,user-scalable=no,initial-scale=1,maximum-scale=1,minimum-scale=1" />
         <title>GammaCV</title>
-        <meta name="og:description" content="GammaCV is a WebGL accelerated Computer Vision library for modern web applications." />
+        <meta property="og:title" content="GammaCV" />
+        <meta name="description" content="GammaCV is a WebGL accelerated Computer Vision library for modern web applications." />
+        <meta property="og:description" content="GammaCV is a WebGL accelerated Computer Vision library for modern web applications." />
         <meta name="twitter:card" content="summary" />
         <meta property="twitter:description" content="GammaCV is a WebGL accelerated Computer Vision library for modern web applications." />
         <meta property="twitter:title" content="GammaCV" />

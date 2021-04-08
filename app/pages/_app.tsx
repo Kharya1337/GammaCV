@@ -52,7 +52,7 @@ export default function MyApp({ Component, pageProps }) {
         <meta property="og:description" content={DESCRIPTION} />
         <meta name="Keywords" content="computer vision, WebGL, javascript" />
 
-        <meta name="twitter:card" content="summary" />
+        <meta name="twitter:card" content="app" />
         <meta property="twitter:description" content={DESCRIPTION} />
         <meta property="twitter:title" content={TITLE} />
 

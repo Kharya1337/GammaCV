@@ -50,11 +50,14 @@ export default function MyApp({ Component, pageProps }) {
         <meta property="og:title" content={TITLE} />
         <meta name="description" content={DESCRIPTION} />
         <meta property="og:description" content={DESCRIPTION} />
+        <meta property="og:description" content={DESCRIPTION} />
         <meta name="Keywords" content="computer vision, WebGL, javascript" />
 
         <meta name="twitter:card" content="app" />
         <meta property="twitter:description" content={DESCRIPTION} />
         <meta property="twitter:title" content={TITLE} />
+
+        <meta property="og:image" content='../public/images/shareImage.png' />
 
         <link rel="icon" href="/static/manifest/favicon.ico" />
         <link rel="apple-touch-icon" href="/static/manifest/apple-touch-icon.png" />

@@ -1,14 +1,9 @@
-const fs = require('fs');
-const path = require('path');
 const jsdoc2md = require('jsdoc-to-markdown');
-
-const sourceDirectory = path.join(__dirname, '../../sources/docs');
-const destinationDirectory = path.join(sourceDirectory, '_data');
 
 const processParams = (params) => {
   if (params) {
     return params.map((e) => {
-      e.type = e.type.names.join(' \\| ').replace('<', '\\<');
+      e.type = e.type.names.join(' | ');
 
       return e;
     });
@@ -17,10 +12,10 @@ const processParams = (params) => {
   return undefined;
 };
 
-const parseJsDocFile = async (filePath, fileName) => {
+const parseJsDoc = async (filePath, fileName) => {
   const res = await jsdoc2md
     .getTemplateData({
-      files: path.join(sourceDirectory, filePath),
+      files: filePath,
     });
   const parsedJsDoc = [];
 
@@ -65,20 +60,20 @@ const parseJsDocFile = async (filePath, fileName) => {
         case 'function': {
           parsedJsDoc[0].methods.push({
             ...baseProperties,
-            isStatic: scope === 'static',
+            scope,
             returns: parsedReturns,
             examples,
-            type: 'function',
+            type: 'method',
           });
           break;
         }
         case 'member': {
           parsedJsDoc[0].methods.push({
             ...baseProperties,
-            isStatic: false,
+            scope,
             returns: parsedReturns,
             name: longname,
-            type: 'function',
+            type: 'method',
           });
           break;
         }
@@ -90,11 +85,9 @@ const parseJsDocFile = async (filePath, fileName) => {
     }
   });
 
-  fs.writeFileSync(path.join(destinationDirectory, `${fileName}.json`), JSON.stringify(parsedJsDoc));
-
   return parsedJsDoc;
 };
 
 module.exports = {
-  parseJsDocFile,
+  parseJsDoc,
 };

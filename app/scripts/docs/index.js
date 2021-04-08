@@ -3,7 +3,7 @@ const fs = require('fs');
 const path = require('path');
 const DOCS_CONFIG = require('../../sources/docs/config.json');
 const { checkDir } = require('./utils');
-const { parseJsDocFile } = require('./parseJsDoc');
+const { parseJsDoc } = require('./parse_jsdoc');
 
 const sourceDirectory = path.join(__dirname, '../../sources/docs');
 const destinationDirectory = path.join(sourceDirectory, '_data');
@@ -18,11 +18,78 @@ const appendLink = (text, docsIds) => {
   return text;
 };
 
+const textToEscaped = (text, sympolsToEscape) => {
+  let escapedText = text;
+
+  sympolsToEscape.forEach((symbol) => {
+    escapedText = escapedText.replace(symbol, `\\${symbol}`);
+  });
+
+  return escapedText;
+};
+
 const handleMDFile = (docItem) => {
   fs.copyFileSync(path.join(sourceDirectory, docItem.path), path.join(destinationDirectory, `${docItem.name}.md`));
 };
 
-const renderMD = (data, docsIds, isClassMethod = false) => {
+const renderMDHeading = (title, level = 2, prefix, postfix = '') => `${'#'.repeat(level)} ${prefix ? `${prefix} ` : ''}${title}${postfix ? ` ${postfix}` : ''}\n\n`;
+
+const renderMDDescription = (description) => `${renderMDHeading('Description', 6)}${description}\n\n`;
+
+const renderMDExamples = (examples) => {
+  const parsedExample = examples.map((e) => `\`\`\`js\n${e}\n\`\`\``).join('\n');
+
+  return `${renderMDHeading('Example', 6)}${parsedExample}\n\n`;
+};
+
+const renderMDParamsTable = (params, docsIds) => {
+  const paramsColumns = params.map((e) => {
+    const name = e.optional ? `${e.name}?` : e.name;
+    const type = textToEscaped(appendLink(e.type, docsIds), ['|', '<']);
+    const description = e.description ? e.description.replace(/\n/g, '<br />') : '';
+
+    return `|**${name}**|<var>${type}</var>|${description}|`;
+  }).join('\n');
+
+  return `${renderMDHeading('Params', 6)}| Param | Type | Description |\n| --- | --- | --- |\n${paramsColumns}\n\n`;
+};
+
+const renderMDFunctionHeadingPostfix = (params, returns, docsIds) => {
+  let PARAMS = '';
+  let RETURNS = 'void';
+
+  if (params) {
+    PARAMS = params.map((p) => (p.optional ? `${p.name}?` : p.name)).join(', ');
+  }
+
+  if (returns) {
+    RETURNS = returns.reduce((r, el) => {
+      let returnValue = r;
+
+      returnValue += appendLink(el.type, docsIds);
+      returnValue += el.description ? ` (${el.description})` : '';
+
+      return returnValue;
+    }, '');
+  }
+
+  return `(${PARAMS}) <span>=> ${textToEscaped(RETURNS, ['|', '<'])}</span>`;
+};
+
+const renderMDHeadingGroup = (name, type, scope, postfix) => {
+  switch (type) {
+    case 'class':
+      return renderMDHeading(name, 2, '<span>Class</span>');
+    case 'function':
+      return renderMDHeading(name, 2, '<span>Function </span>', postfix);
+    case 'method':
+      return renderMDHeading(name, 4, scope === 'static' ? '<span>Static</span> ' : '', postfix);
+    default:
+      return renderMDHeading(name, 2);
+  }
+};
+
+const renderMD = (data, docsIds = false) => {
   const out = [];
 
   data.forEach((item) => {
@@ -34,147 +101,32 @@ const renderMD = (data, docsIds, isClassMethod = false) => {
       examples,
       description,
       methods,
-      isStatic,
+      scope,
     } = item;
 
-    if (type === 'function') {
-      let PARAMS = [];
-      let RETURNS = '<span>void</span>';
+    const functionPostfix = renderMDFunctionHeadingPostfix(params, returns, docsIds);
 
-      if (params) {
-        PARAMS = params.map((p) => (p.optional ? `${p.name}?` : p.name));
-      }
-
-      if (returns && returns.length) {
-        RETURNS = returns.reduce((r, el) => {
-          let returnValue = r;
-
-          returnValue += `<span>${appendLink(el.type, docsIds)}</span>`;
-          returnValue += el.description ? `<span> (${el.description})</span>` : '';
-
-          return returnValue;
-        }, '');
-      }
-
-      if (isClassMethod) {
-        out.push(
-          '####',
-          ' ',
-          isStatic ? '<span>Static </span>' : '',
-        );
-      } else {
-        out.push(
-          '##',
-          ' ',
-          '<span>Function </span>',
-        );
-      }
-
-      out.push(
-        '**',
-        name,
-        '(',
-        PARAMS.join(', '),
-        ')**',
-        ' ',
-        '<span>=> </span>',
-        RETURNS,
-        '\n',
-        '\n',
-      );
-    } else if (type === 'class') {
-      out.push(
-        '##',
-        ' ',
-        '<span>Class</span>',
-        ' ',
-        name,
-        '\n',
-        '\n',
-      );
-    } else {
-      out.push(
-        '##',
-        ' ',
-        name,
-        '\n',
-        '\n',
-      );
-    }
+    out.push(renderMDHeadingGroup(name, type, scope, functionPostfix));
 
     if (description) {
-      out.push(
-        '######',
-        ' ',
-        'Description',
-        '\n',
-        '\n',
-        description,
-        '\n',
-        '\n',
-      );
+      out.push(renderMDDescription(description));
     }
 
     if (params && params.length) {
-      out.push(
-        '######',
-        ' ',
-        'Params',
-        '\n',
-        '\n',
-      );
-
-      out.push(
-        '| Param | Type | Description |',
-        '\n',
-        '| --- | --- | --- |',
-        '\n',
-      );
-
-      out.push(...params.map((e) => ([
-        '|',
-        `**${e.optional ? `${e.name}?` : e.name}**`,
-        '|',
-        `<var>${appendLink(e.type, docsIds)}</var>`,
-        '|',
-        e.description ? e.description.replace(/\n/g, '') : e.description,
-        '|',
-        '\n',
-      ].join(' '))));
-
-      out.push('\n');
+      out.push(renderMDParamsTable(params, docsIds));
     }
 
     if (examples && examples.length) {
-      out.push(
-        '######',
-        ' ',
-        'Example',
-        '\n',
-        '\n',
-      );
-
-      out.push(...examples.map((e) => ([
-        '```js',
-        e,
-        '```',
-        '\n',
-      ].join('\n'))));
+      out.push(renderMDExamples(examples));
     }
 
     if (methods) {
-      out.push(
-        '######',
-        ' Methods',
-        '\n',
-        '\n',
-      );
-
-      out.push(renderMD(methods, docsIds, true).md);
+      out.push(renderMDHeading('Methods', 6));
+      out.push(renderMD(methods, docsIds));
     }
   });
 
-  return { md: out.join('') };
+  return out.join('');
 };
 
 async function main() {
@@ -187,11 +139,12 @@ async function main() {
   for (let i = 0; i < items.length; i += 1) {
     const item = items[i];
     const isMD = /\.md$/.test(item.path);
+    const itemPath = path.join(sourceDirectory, item.path);
 
     if (isMD) {
       handleMDFile(item);
     } else {
-      const res = await parseJsDocFile(item.path, item.name);
+      const res = await parseJsDoc(itemPath, item.name);
 
       parsedDocs.push(res);
       docsIds.push({ id: res[0].id, name: res[0].name });
@@ -199,7 +152,7 @@ async function main() {
   }
 
   for (let i = 0; i < parsedDocs.length; i += 1) {
-    const { md } = renderMD(parsedDocs[i], docsIds);
+    const md = renderMD(parsedDocs[i], docsIds);
 
     fs.writeFileSync(path.join(destinationDirectory, `${docsIds[i].id}.md`), md);
   }

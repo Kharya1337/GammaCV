@@ -9,8 +9,10 @@ const Examples = (props) => {
   return (
     <>
       <Head>
-        <title>{TITLE}</title>
-        <meta property="twitter:title" content={TITLE} />
+        <title>
+          {TITLE}
+        </title>
+        <meta name="twitter:title" content={TITLE} />
         <meta property="og:title" content={TITLE} />
       </Head>
 

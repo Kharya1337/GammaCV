@@ -57,7 +57,8 @@ export default function MyApp({ Component, pageProps }) {
 
         <meta property="og:title" content={TITLE} />
         <meta property="og:description" content={DESCRIPTION} />
-        <meta property="og:image" content="/static/images/share_image.png" />
+        <meta property="og:image" content="https://gamma-cv-kharya1337.vercel.app/static/images/share_image.png" />
+        <meta property="twitter:image" content="https://gamma-cv-kharya1337.vercel.app/static/images/share_image.png" />
 
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:title" content={TITLE} />

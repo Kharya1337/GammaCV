@@ -205,10 +205,9 @@ export default class ParamsWrapper extends React.Component<IParamsWrapperProps> 
   }
 }
 
-const contextTypes = {
+// @ts-ignore
+ParamsWrapper.contextTypes = {
   intl: PropTypes.shape({
     getText: PropTypes.func,
   }),
 };
-
-Object.assign(ParamsWrapper, { contextTypes });

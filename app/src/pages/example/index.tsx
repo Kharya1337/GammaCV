@@ -302,10 +302,10 @@ export default class ExamplePage
     }
   };
 
-  start = async () => {
+  start = () => {
     // start capturing a camera and run loop
     try {
-      await this.stream.start();
+      this.stream.start().catch(() => { throw new Error(); });
 
       this.timeoutRequestAnimation = window.requestAnimationFrame(this.tick);
       this.setState({

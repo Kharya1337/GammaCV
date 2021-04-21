@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 import { CircularProgress } from 'lib-react-components';
 
 const Example = (props, context) => {
-  const { id } = props;
+  const { id, data } = props;
   const { intl } = context;
   const [loading, setLoading] = useState(true);
   const [examplePage, setExamplePage] = useState<typeof import('../../src/pages/example')>({} as any);
@@ -48,6 +48,8 @@ const Example = (props, context) => {
   };
 
   const TITLE = `${intl.getText('operations', undefined, id)} - GammaCV`;
+  const DESCRIPTION = data.match(/(?<=(^# )|(^###### Description).*\n)(.|\n)[^#]*(?=\n\n#)/gm)[0];
+
   return (
     <>
       <Head>
@@ -56,6 +58,9 @@ const Example = (props, context) => {
         </title>
         <meta name="twitter:title" content={TITLE} />
         <meta property="og:title" content={TITLE} />
+        <meta name="description" content={TITLE + DESCRIPTION.replace(/\n/g, ' ')} />
+        <meta property="og:description" content={TITLE + DESCRIPTION.replace(/\n/g, ' ')} />
+        <meta name="twitter:description" content={TITLE + DESCRIPTION.replace(/\n/g, ' ')} />
       </Head>
       {renderContent()}
     </>
@@ -77,9 +82,12 @@ export async function getStaticPaths() {
 }
 
 export async function getStaticProps(context) {
+  const data = (await import(`../../sources/docs/_data/${context.params.id}.md`)).default;
+
   return {
     props: {
       id: context.params.id,
+      data,
     },
   };
 }

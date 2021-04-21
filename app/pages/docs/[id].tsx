@@ -7,6 +7,7 @@ const Doc = (props, context) => {
   const { id, data } = props;
   const { intl } = context;
   const TITLE = `${intl.getText('operations', undefined, id)} - GammaCV`;
+  const DESCRIPTION = data.match(/(?<=(^# )|(^###### Description).*\n)(.|\n)[^#]*(?=\n\n#)/gm)[0];
 
   return (
     <>
@@ -16,6 +17,9 @@ const Doc = (props, context) => {
         </title>
         <meta name="twitter:title" content={TITLE} />
         <meta property="og:title" content={TITLE} />
+        <meta name="description" content={TITLE + DESCRIPTION} />
+        <meta property="og:description" content={TITLE + DESCRIPTION} />
+        <meta name="twitter:description" content={TITLE + DESCRIPTION} />
       </Head>
       <DocsPage
         data={data}
